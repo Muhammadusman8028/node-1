@@ -1,29 +1,52 @@
-name: Node.js CI
+name: Deploy Node.js to EC2
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
-  build:
-
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Use app.js
-        uses: actions/setup-node@v3
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
         with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        run: npm test
-      
-
+          host: ${{  3.95.21.35 }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ -----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA09SoAwS7bDPorUJ+E93fo6GW8/s48J+/zJm+71vo2EQzBsQg
+4S505JqnL2nDOKiO+zoYIAkX3DirvnFLBZ+7Q+siLPVD7irIELPz+MlT3XQyt5/A
+ETFQFFdrwtWy10JgTNR1EUnuEpsOaVkXHtG2ydxBTbmMi0t7o1kM069Itt12Vsg7
+tkQArP75Xhbp02nxCnUEB4OhE+eHOGh7bscWCwoP/mIN7X7/sKEevQxksfxiBMB0
+ZLIMmI7TNpNhPS8L6OH1Xpd0wcI6sdi3egl06XC4lE95r6vHCRBS4VRaWWSV8d3g
+iLZDuT2tc+rRnC0UVee/Wqq0mp8mjKe+TR7WCQIDAQABAoIBACKB3ey/9JgnzJuM
+3WT3G9tYE3MjVZ89Js15rjTn0AKK+ZT8li6Ylso2t01t+TNdog0i5ZMyaASj5rZb
+VlFQN/1UbHjOa4Z8yaKO7gt1IIhOyYRILc2fLuBhbViL31pZob5iTb/HP1UglTRs
+IuwOVayEiM7UjySR4040z3Ycc8f198Bd/EAdVMI9VwGfmIh9rnTeCX9/kGQYFZFz
+YhjxrWC0B36STGPDAeB0o32Else3Km/vKUT+pIY4fpyJ2O/tjWZwrjbSfWLEnFCJ
+Dty2rrnULcUhtMldVkTvxpAyrkHQjCEVpaVsDoHALUVoR+rmlgpL4p3HMhSbCu19
+V59JCBECgYEA9DMOL1noDorThBW2hYJEBRDEHcDWM03lUmS+jrefLCkacjkndOxW
+4UKGcX2uAlWdbCtAtoSmyYyOqN5k1frHkPwnL/B2nhhVxjAACjW+FLXlmPEa2e0S
+yhAOedJVC7iivRtV2DcV+DZzPpuUhIwiPno61lzSduyzCAj+voJoVU8CgYEA3hEs
+XY0kfENOcAg+AI/riLytMq8zVI5FHayaZahj5sGUG4zJiZvJsrquSvpOpZc3fLqr
+7h4CBH0oPQX4ggJFyCMo9o0XoCa882BvR42iGOxmZbiC8QX5xrm/3p9SNzZqOqIe
+XQj6EvkWOuqer5aNc1TFcVgneJOdSZFeozfA+ScCgYEAqzsJnUZLo7bQrfOTsnYv
+P+YLvlkzWXIrdOTTgbtbz1lbA/Dzq9b07Kr7HqVj2Jsz8V8610CYuwbmGZ8n0asx
+OIa267SPWDf0HS4XORGKIXeScPXPQDQuUqWDoQRNQhTLeBKs1Rl7PDriAGqTb4Xb
+lTeb/ifEJEPBHcdA6VED250CgYEAs4WknRh+V2q+HXm8Tg4LNmZ5ihDy6Td+joe7
+5dTktmbmCgOd5f4oZ7HdN0X1kI6Xz+DFH2Ho9aIMhpCuHsQhj7NE6VSUtea7N/FM
+5MaONaHfAfrQ+HKBQ3Nktl+MQpBd/nqTG1kneXEe1JBZqs+GGKd+WqwOdL65GAFK
+RZ7MBV8CgYAWSUag8AZoVqWuC0FW797wqQ7xiqbmT8Xu+NWt0na4V94b6ZH+YcmM
+wOw1G5nkNfOJiGp0CnF2mnASpa9K9doUX6ljG8YK8LYEjlw6RDWGWpbq8wvnpK8b
+0v5X/Dxs65QuK8IpXPfdgcIH4GL0jvoPmzyAhvjzOQp808hbLxoqVw==
+-----END RSA PRIVATE KEY----- }}
+          port: 3000
+          script: |
+            cd /var/www/Node-hello
+            git pull origin main
+            npm install
+            pm2 restart app || pm2 start app.js --name app
