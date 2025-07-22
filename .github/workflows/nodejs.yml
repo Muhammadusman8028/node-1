@@ -46,7 +46,7 @@ wOw1G5nkNfOJiGp0CnF2mnASpa9K9doUX6ljG8YK8LYEjlw6RDWGWpbq8wvnpK8b
 -----END RSA PRIVATE KEY----- }}
           port: 3000
           script: |
-            cd /var/www/Node-hello
+            cd /var/www/node-1
             git pull origin main
             npm install
             pm2 restart app || pm2 start app.js --name app
