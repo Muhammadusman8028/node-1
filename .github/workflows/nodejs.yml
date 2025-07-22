@@ -25,5 +25,5 @@ jobs:
 
       - name: Run tests
         run: npm test
-        run: node app.js  
+      
 
