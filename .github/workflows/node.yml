@@ -24,6 +24,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: Install dependencies
+      run:  npm install express
+    - name: Install dependencies
       run:  npm install
 
     - name: Start app in background
