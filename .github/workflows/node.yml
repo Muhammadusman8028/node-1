@@ -20,6 +20,8 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            mkdir -p ~/.ssh
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
             cd /var/www/node-1
             git pull origin main
             chmod +x dev.sh
