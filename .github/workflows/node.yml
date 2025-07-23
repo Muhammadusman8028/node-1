@@ -34,5 +34,9 @@ jobs:
 
     - name: Done
       run: echo "✅ Pipeline completed successfully"
+      
+    - name: Done2   
       run: npm install
+
+    - name: Done3    
       run: node app.js  
