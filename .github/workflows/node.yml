@@ -24,21 +24,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: Install dependencies
-      run: sudo npm install
+      run:  npm install
 
     - name: Start app in background
-      run: |
-        sudo node app.js > output.log 2>&1 &
-        echo $! > pid.txt
-        sleep 5
-        echo "App started. Checking output..."
-        cat output.log
-
-    - name: Stop app
-      run: |
-        kill $(cat pid.txt)
-        echo "App stopped."
-
-    - name: Done
-      run: echo "✅ Application ran successfully in CI."
-
+      run:  node app.js  
