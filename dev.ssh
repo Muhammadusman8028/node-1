@@ -1,0 +1,12 @@
+ #!/bin/bash
+
+echo "🚀 Starting deployment..."
+
+cd /var/www/node-1      # Navigate to your project folder on EC2
+
+git pull origin main  # Pull latest changes
+
+npm install           # Install dependencies
+
+pm2 restart app_name || pm2 start app.js --name app_name
+
