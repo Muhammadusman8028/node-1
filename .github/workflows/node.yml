@@ -28,16 +28,7 @@ jobs:
 
     - name: Start app in background
       run: |
-        node app.js > output.log 2>&1 &
-        echo $! > pid.txt
-        sleep 5
-        echo "App started. Checking output..."
-        cat output.log
-
-    - name: Stop app
-      run: |
-        kill $(cat pid.txt)
-        echo "App stopped."
+        node app.js
 
     - name: Done
       run: echo "✅ Application ran successfully in CI."
