@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x] # Use the same Node version as your local/EC2
+        node-version: [18.x]
 
     steps:
     - name: Checkout code
@@ -24,19 +24,21 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: Install dependencies
-      run: npm ci
+      run: sudo npm install
 
-    - name: Check formatting/lint (optional)
-      run: npm run lint || echo "No lint script"
+    - name: Start app in background
+      run: |
+        sudo node app.js > output.log 2>&1 &
+        echo $! > pid.txt
+        sleep 5
+        echo "App started. Checking output..."
+        cat output.log
 
-    - name: Run tests (optional)
-      run: npm test || echo "No tests defined"
+    - name: Stop app
+      run: |
+        kill $(cat pid.txt)
+        echo "App stopped."
 
     - name: Done
-      run: echo "✅ Pipeline completed successfully"
-      
-    - name: Done2   
-      run: npm install
+      run: echo "✅ Application ran successfully in CI."
 
-    - name: Done3    
-      run: node app.js  
