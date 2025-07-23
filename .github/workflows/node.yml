@@ -1,35 +1,45 @@
-name: Node.js CI
-
+name: Deploy to EC2
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
+    branches:
+      - main
 jobs:
-  build:
+  deploy:
+    name: Build and Deploy
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x]
-
+    env:
+      EC2_HOST: "i-06fe44b219fbfc9b6.us-east-1.compute.amazonaws.com"
+      EC2_USER: "ubuntu"
+      EC2_APP_PATH: "/var/www/node-1/"
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkoutt Code
+        uses: actions/checkout@v3
+      - name: Install Dependencie
+        run: npm install
+      - name: SSH into EC2 instace and Deployy
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ env.EC2_HOST }}
+          username: ${{ env.EC2_USER }}
+          key: ${{ secrets.AWS_EC }}
+          timeout: 60s
+          port: 22
+          script: |
+            set -e
+            echo "Pulling latest changes on EC2"
+            cd ${{ env.EC2_APP_PATH }}
+            npm install
+            echo "Restarting application"
+            pm2 restart app || pm2 start index.js --name app
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
 
-    - name: Install dependencies
-      run: npm install
 
-    - name: Start app in background
-      run: |
-        node app.js
 
-    - name: Done
-      run: echo "✅ Application ran successfully in CI."
+
+
+
+
+
+
+
 
