@@ -1,39 +1,29 @@
 name: Deploy to EC2
+
 on:
   push:
     branches:
       - main
+
 jobs:
   deploy:
-    name: Build and Deploy
     runs-on: ubuntu-latest
-    env:
-      EC2_HOST: "i-06fe44b219fbfc9b6.us-east-1.compute.amazonaws.com"
-      EC2_USER: "ubuntu"
-      EC2_APP_PATH: "/var/www/node-1/"
+
     steps:
-      - name: Checkoutt Code
+      - name: Checkout code
         uses: actions/checkout@v3
-      - name: Install Dependencie
-        run: npm install
-      - name: SSH into EC2 instace and Deployy
-        uses: appleboy/ssh-action@v0.1.10
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.6
         with:
-          host: ${{ env.EC2_HOST }}
-          username: ${{ env.EC2_USER }}
-          key: ${{ secrets.AWS_EC }}
-          timeout: 60s
-          port: 22
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            set -e
-            echo "Pulling latest changes on EC2"
-            cd ${{ env.EC2_APP_PATH }}
-            npm install
-            echo "Restarting application"
-            pm2 restart app || pm2 start index.js --name app
-
-
-
+            cd /var/www/node-1
+            git pull origin main
+            chmod +x dev.sh
+            ./dev.sh
 
 
 
