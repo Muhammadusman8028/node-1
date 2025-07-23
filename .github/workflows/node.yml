@@ -1,25 +1,44 @@
-name: Deploy Node App to EC2
+name: Node.js CI
+
 on:
   push:
-    branches: [main]
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    - name: Setup SSH key
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Start app in background
       run: |
-        echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
-        chmod 600 key.pem
-    - name: Deploy to EC2
+        node app.js > output.log 2>&1 &
+        echo $! > pid.txt
+        sleep 5
+        echo "App started. Checking output..."
+        cat output.log
+
+    - name: Stop app
       run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-          pm2 stop node-hello || true
-          rm -rf node-hello
-          git clone https://github.com/<your-username>/node-hello.git
-          cd node-hello
-          npm install
-          pm2 start app.js --name node-hello
-          pm2 save
-        EOF
+        kill $(cat pid.txt)
+        echo "App stopped."
+
+    - name: Done
+      run: echo "✅ Application ran successfully in CI."
+
