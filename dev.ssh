@@ -9,5 +9,4 @@ git pull origin main  # Pull latest changes
 npm install           # Install dependencies
 
 pm2 restart all --update-env
- || pm2 start app.js --name app_name
 
